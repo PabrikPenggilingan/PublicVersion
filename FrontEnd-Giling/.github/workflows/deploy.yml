@@ -1,0 +1,70 @@
+name: Deploy Frontend to GCP Cloud Run
+
+on:
+  push:
+    branches:
+      - AkmalDeploy
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.PADINADIPILOT2026 }}
+  REGION: asia-southeast1
+  GAR_REPOSITORY: padinadipilot
+
+jobs:
+  deploy:
+    name: Build & Deploy Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Environment Target
+        id: env-target
+        run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            echo "ENV_NAME=production" >> $GITHUB_OUTPUT
+            echo "SERVICE_NAME=gabah-frontend" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=latest" >> $GITHUB_OUTPUT
+            echo "NGINX_CONF=nginx.conf" >> $GITHUB_OUTPUT
+          else
+            echo "ENV_NAME=staging" >> $GITHUB_OUTPUT
+            echo "SERVICE_NAME=gabah-frontend-staging" >> $GITHUB_OUTPUT
+            echo "IMAGE_TAG=staging" >> $GITHUB_OUTPUT
+            echo "NGINX_CONF=nginx.staging.conf" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.A0BD24361DB397E92284217DC5D7351CD741343BE }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      - name: Build & Push Docker Image
+        run: |
+          IMAGE_FULL="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/gabah-frontend:${{ steps.env-target.outputs.IMAGE_TAG }}"
+          IMAGE_SHA="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/gabah-frontend:${{ github.sha }}"
+          
+          docker build --build-arg NGINX_CONF=${{ steps.env-target.outputs.NGINX_CONF }} -t "$IMAGE_FULL" -t "$IMAGE_SHA" .
+          docker push "$IMAGE_FULL"
+          docker push "$IMAGE_SHA"
+
+      - name: Deploy to Cloud Run
+        run: |
+          IMAGE_SHA="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/gabah-frontend:${{ github.sha }}"
+          
+          gcloud run deploy ${{ steps.env-target.outputs.SERVICE_NAME }} \
+            --image="$IMAGE_SHA" \
+            --region=${{ env.REGION }} \
+            --platform=managed \
+            --allow-unauthenticated \
+            --port=80 \
+            --memory=256Mi \
+            --cpu=1

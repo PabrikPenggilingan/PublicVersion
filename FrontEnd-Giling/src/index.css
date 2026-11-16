@@ -1,0 +1,218 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --color-white: 255 255 255;
+        --color-gray-400: 156 163 175;
+        --color-gray-500: 107 114 128;
+        --color-slate-800: 30 41 59;
+        --color-primary-200: 167 243 208;
+        --color-primary-300: 110 231 183;
+        --color-primary-400: 52 211 153;
+        --color-primary-500: 16 185 129;
+        --color-primary-600: 5 150 105;
+        --color-primary-700: 4 120 87;
+        --color-primary-900: 6 78 59;
+        --color-stone-50: 250 250 249;
+        --color-stone-100: 242 242 241;
+        --color-stone-200: 230 230 228;
+        --color-stone-300: 210 210 207;
+        --color-stone-400: 184 184 178;
+        --color-stone-500: 147 147 138;
+        --color-stone-600: 111 111 102;
+        --color-stone-700: 74 74 68;
+        --color-stone-800: 47 47 44;
+        --color-stone-900: 26 26 24;
+        --color-stone-950: 13 13 12;
+
+        /* Red, Amber, Emerald, Cyan, Blue, Violet */
+        --color-red-400: 248 113 113;
+        --color-red-500: 239 68 68;
+        --color-amber-400: 251 191 36;
+        --color-amber-500: 245 158 11;
+        --color-emerald-400: 52 211 153;
+        --color-emerald-500: 16 185 129;
+        --color-cyan-500: 6 182 212;
+        --color-blue-500: 59 130 246;
+        --color-violet-500: 139 92 246;
+
+        /* Brand Colors */
+        --color-brand-brown: 119 59 39;
+        --color-brand-dark-green: 38 126 60;
+        --color-brand-light-green: 91 161 46;
+        --color-brand-yellow: 246 196 22;
+    }
+
+
+}
+
+/* ===================================================
+   MOBILE-FIRST BASE
+   =================================================== */
+
+/* Prevent iOS auto-zoom on input focus (requires font-size >= 16px) */
+input,
+select,
+textarea {
+    font-size: 16px;
+}
+
+/* Remove tap highlight flash on mobile (Android/iOS) */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Better font rendering on retina displays */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent text size adjustment on orientation change */
+    -webkit-text-size-adjust: 100%;
+}
+
+/* Remove 300ms tap delay on buttons and links — makes UI feel snappier */
+button,
+a,
+[role="button"] {
+    touch-action: manipulation;
+}
+
+/* Prevent rubber-band scroll on the whole page body for iOS */
+html,
+body {
+    overscroll-behavior: none;
+}
+
+/* ===================================================
+   SCROLLBARS (desktop only — hidden on mobile)
+   =================================================== */
+@media (min-width: 768px) {
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-[#773b27]/50;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-[#773b27]/80 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-[#773b27];
+    }
+}
+
+/* ===================================================
+   SELECTION
+   =================================================== */
+::selection {
+    @apply bg-brand-light-green text-white;
+}
+
+/* ===================================================
+   SPINNER
+   =================================================== */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    @apply w-8 h-8 sm:w-10 sm:h-10 border-4 border-stone-700 border-t-brand-light-green rounded-full;
+    animation: spin 0.8s linear infinite;
+}
+
+/* ===================================================
+   SAFE AREA (for notch phones — iPhone X and later)
+   =================================================== */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ===================================================
+   MOBILE TOUCH HELPERS
+   =================================================== */
+
+/* Minimum tap target size per Apple HIG (44x44px) */
+.touch-target {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* Line-clamp utility */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+/* ── Phone-friendly tables (utils/useTableCards.ts) ───────────────────────────
+   Below 768px every row of a .table-cards table becomes a card: the column header
+   (data-label) on the left, the value on the right. No horizontal scrolling. */
+@media (max-width: 767px) {
+  table.table-cards {
+    min-width: 0 !important;
+    width: 100%;
+  }
+  table.table-cards thead {
+    display: none;
+  }
+  table.table-cards,
+  table.table-cards tbody,
+  table.table-cards tr,
+  table.table-cards td {
+    display: block;
+    width: 100%;
+  }
+  table.table-cards tbody {
+    border: 0 !important;
+  }
+  table.table-cards tbody tr {
+    border: 1px solid #d6d3d1 !important;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+  }
+  table.table-cards td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.3rem 0 !important;
+    text-align: right;
+    border: 0 !important;
+    min-width: 0;
+    white-space: normal;
+  }
+  table.table-cards td > * {
+    min-width: 0;
+  }
+  table.table-cards td[data-label]:not([data-label=""])::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    max-width: 45%;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #78716c;
+  }
+  table.table-cards td[data-label=""] {
+    justify-content: flex-start;
+    text-align: left;
+  }
+}

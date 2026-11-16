@@ -1,0 +1,83 @@
+name: backend-giling
+
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: gabah_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-12345678}
+      POSTGRES_DB: ${DB_NAME:-gabah_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - gabah_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-gabah_db}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: gabah_api
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - gabah_network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    command: sh -c "npm run migrate && npm start"
+
+  frontend:
+    build:
+      context: ../FrontEnd-Giling
+      dockerfile: Dockerfile
+    container_name: gabah_frontend
+    volumes:
+      - frontend_dist:/usr/share/nginx/html
+    networks:
+      - gabah_network
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: gabah_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - frontend_dist:/usr/share/nginx/html:ro
+    depends_on:
+      - frontend
+    networks:
+      - gabah_network
+    restart: unless-stopped
+
+networks:
+  gabah_network:
+    driver: bridge
+
+volumes:
+  pgdata:
+    name: gabah_pgdata
+  frontend_dist:

@@ -1,0 +1,57 @@
+{
+  "name": "belanja-giling-management-system",
+  "version": "1.0.0",
+  "description": "Sistem Pencatatan Belanja Gabah & Pasca Proses",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node scripts/migrate.js && node src/index.js",
+    "dev": "nodemon src/index.js",
+    "audit": "npm audit --audit-level=critical",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "test": "cross-env NODE_ENV=test jest --runInBand --forceExit",
+    "cost-bot": "node scripts/cost-bot/run.js"
+  },
+  "keywords": [
+    "gabah",
+    "penggilingan",
+    "rice",
+    "milling"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/monitoring": "^6.1.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "date-fns": "^4.4.0",
+    "dotenv": "^16.6.1",
+    "exceljs": "^4.4.0",
+    "express": "^4.22.2",
+    "express-rate-limit": "^8.6.2",
+    "helmet": "^7.2.0",
+    "hpp": "^0.2.3",
+    "joi": "^17.13.4",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.11.0",
+    "multer": "^2.2.0",
+    "pdfmake": "^0.3.11",
+    "pg": "^8.22.0",
+    "sharp": "^0.35.5",
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.14",
+    "playwright": "^1.64.1",
+    "supertest": "^6.3.4"
+  },
+  "overrides": {
+    "exceljs": {
+      "uuid": "^11.1.1"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+Group,Resource,Usage,Unit,UnitPriceUSD,DailyCostUSD,DailyCostIDR,MonthlyCostUSD,MonthlyCostIDR,Source,Notes
+"GCP Cloud Run (Frontend)","Static Asset Requests",91,"requests",4.0000000000000003e-7,0.000036,1,0.001092,17,"Playwright telemetry","HTML, JS chunks, CSS, icons"
+"GCP Cloud Run (Frontend)","Asset Delivery CPU",0.433,"vCPU-seconds",0.0000336,0.000015,0,0.000436,7,"estimated from latency","Nginx container 0.25 vCPU"
+"GCP Cloud Run (Frontend)","Asset Delivery Memory",0.10825,"GiB-seconds",0.0000035,0.000000,0,0.000011,0,"estimated from latency","256 MiB container"
+"GCP Cloud Run (Frontend)","Frontend Asset Egress",0.023965328000485897,"GB",0.12,0.002876,46,0.086275,1380,"Playwright asset transfer","downloaded bundles & assets"
+"GCP Cloud Run (Backend)","API Requests",74,"requests",4.0000000000000003e-7,0.000030,0,0.000888,14,"Playwright API intercept",""
+"GCP Cloud Run (Backend)","API Compute CPU",11.53,"vCPU-seconds",0.0000336,0.000387,6,0.011622,186,"estimated from latency","assumes 1 vCPU, concurrency 1"
+"GCP Cloud Run (Backend)","API Compute Memory",5.77,"GiB-seconds",0.0000035,0.000020,0,0.000606,10,"estimated from latency","assumes 0.5 GiB, concurrency 1"
+"GCP Cloud Run (Backend)","API Network Egress",0.00011359341442584991,"GB",0.12,0.000014,0,0.000409,7,"API response bytes",""
+"Supabase DB","DB Disk Growth (kept 1 month)",0,"GB-month",0.125,0.000000,0,0.000000,0,"pg_stat + pg_database_size","0 rows inserted"
+"Supabase DB","DB Egress (approx.)",0.00011359341442584991,"GB",0.09,0.000010,0,0.000307,5,"proxy: API response bytes","DB to Cloud Run traffic"
+"Supabase Storage","File Storage Growth (kept 1 month)",0.000007027760148048401,"GB-month",0.0213,0.000000,0,0.000004,0,"Playwright telemetry","25 files uploaded"

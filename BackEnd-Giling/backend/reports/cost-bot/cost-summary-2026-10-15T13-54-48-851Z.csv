@@ -1,0 +1,8 @@
+Group,Resource,Usage,Unit,UnitPriceUSD,DailyCostUSD,DailyCostIDR,MonthlyCostUSD,MonthlyCostIDR,Source,Notes
+"GCP Cloud Run","Requests",33,"requests",4.0000000000000003e-7,0.000013,0,0.000396,6,"client count",""
+"GCP Cloud Run","CPU",5.75,"vCPU-seconds",0.0000336,0.000193,3,0.005796,93,"estimated from latency","assumes 1 vCPU, concurrency 1"
+"GCP Cloud Run","Memory",2.87,"GiB-seconds",0.0000035,0.000010,0,0.000301,5,"estimated from latency","assumes 0.5 GiB, concurrency 1"
+"GCP Cloud Run","Network egress",0.0000372445210814476,"GB",0.12,0.000004,0,0.000134,2,"response bytes (client)",""
+"Supabase DB","DB disk growth (kept 1 month)",0,"GB-month",0.125,0.000000,0,0.000000,0,"pg_stat + pg_database_size","0 rows inserted"
+"Supabase DB","DB egress (approx.)",0.0000372445210814476,"GB",0.09,0.000003,0,0.000101,2,"proxy: API response bytes","real DB egress is usually lower than this"
+"Supabase Storage","File storage growth (kept 1 month)",0.00011434778571128845,"GB-month",0.0213,0.000002,0,0.000073,1,"API upload telemetry","4 files"

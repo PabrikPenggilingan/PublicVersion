@@ -1,0 +1,16 @@
+Method,Route,Calls,Success,Failed,AvgLatencyMs,P95LatencyMs,RequestBytes,ResponseBytes
+"GET","/batches",5,5,0,125,136,0,12198
+"GET","/dashboard/timeline",5,5,0,174,386,0,10876
+"GET","/auth/me",5,5,0,116,125,0,1400
+"POST","/files",4,4,0,193,242,122780,1700
+"POST","/inventory",2,1,1,170,177,335,2254
+"POST","/batches/:id/purchases",2,2,0,274,281,709,1161
+"GET","/purchases/:id",2,2,0,121,122,0,1161
+"GET","/finance/accounts",1,1,0,149,149,0,5788
+"GET","/finance/report",1,1,0,265,265,0,1090
+"POST","/finance/overhead",1,0,1,148,148,213,619
+"POST","/auth/login",1,1,0,566,566,42,571
+"POST","/sales-v2/sales",1,0,1,158,158,173,437
+"POST","/batches",1,1,0,259,259,46,339
+"GET","/batches/:id",1,1,0,111,111,0,345
+"POST","/auth/logout",1,1,0,117,117,2,52

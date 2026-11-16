@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+*.log
+.vite
+playwright-report
+test-results
+scratch
+*.cjs
+*.py

@@ -1,0 +1,93 @@
+version: '3.9'
+
+services:
+  # ─────────────────────────────────────────────
+  # DATABASE — PostgreSQL 14
+  # ─────────────────────────────────────────────
+  db:
+    image: postgres:14-alpine
+    container_name: gabah_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-12345678}
+      POSTGRES_DB: ${DB_NAME:-gabah_db}
+    volumes:
+      # Persistent storage — data DB tidak hilang walau container dimatikan
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      # Buka port 5432 ke host agar bisa diakses dengan tools seperti DBeaver / pgAdmin
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-gabah_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # ─────────────────────────────────────────────
+  # BACKEND — Node.js Express API
+  # ─────────────────────────────────────────────
+  backend:
+    image: node:18-alpine
+    container_name: gabah_backend
+    working_dir: /app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      # Gunakan nama service 'db' sebagai hostname — ini adalah DNS internal Docker Compose
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-12345678}@db:5432/${DB_NAME:-gabah_db}
+      LOG_DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-12345678}@db:5432/${DB_NAME:-gabah_db}
+      JWT_SECRET: ${JWT_SECRET:-ganti-dengan-secret-key-yang-kuat}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      # Cloudflare R2 (opsional, isi jika digunakan)
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_ENDPOINT: ${R2_ENDPOINT:-}
+    volumes:
+      # BIND MOUNT: kode sumber langsung dari laptop (hot-reload nodemon bekerja)
+      - ./BackEnd-Giling/backend:/app
+      # ANONYMOUS VOLUME: pisahkan node_modules container dari laptop (Windows/Linux compat)
+      - /app/node_modules
+      # PERSISTENT VOLUME: folder uploads foto tidak hilang saat container restart
+      - uploads_data:/app/uploads
+    ports:
+      - "3000:3000"
+    # Install deps, jalankan migrasi DB, lalu start dengan nodemon (hot-reload)
+    command: sh -c "npm install && npm run migrate && npm run dev"
+
+  # ─────────────────────────────────────────────
+  # FRONTEND — React + Vite Dev Server
+  # ─────────────────────────────────────────────
+  frontend:
+    image: node:18-alpine
+    container_name: gabah_frontend
+    working_dir: /app
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      # Beritahu Vite bahwa backend bisa dicapai via nama service 'backend' di Docker
+      VITE_API_HOST: http://backend:3000
+    volumes:
+      # BIND MOUNT: kode sumber langsung dari laptop (hot-reload Vite bekerja)
+      - ./FrontEnd-Giling:/app
+      # ANONYMOUS VOLUME: pisahkan node_modules container dari laptop
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    # Install deps lalu start Vite dev server dengan --host agar bisa diakses dari browser di luar Docker
+    command: sh -c "npm install && npm run dev -- --host"
+
+# ─────────────────────────────────────────────
+# VOLUMES (Named volumes persisten)
+# ─────────────────────────────────────────────
+volumes:
+  pgdata:
+    name: gabah_pgdata
+  uploads_data:
+    name: gabah_uploads
